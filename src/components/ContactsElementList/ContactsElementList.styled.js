@@ -18,6 +18,7 @@ export const Button = styled.button`
   border-radius: 3px;
   background-color: #f27b77;
   color: #ffffff;
+  width: 60px;
   &:hover,
   &:focus {
     background-color: #ffffff;

@@ -1,11 +1,16 @@
 import { useState } from 'react';
+import { useCreateContactMutation, useGetContactsQuery } from 'redux/contacts';
+import { toast } from 'react-toastify';
 
 import { nanoid } from 'nanoid';
 import { Form, Label, Input, Button } from './ContactForm.styled';
 
-const ContactForm = ({ onSubmitForm }) => {
+const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+
+  const { data: contacts } = useGetContactsQuery();
+  const [createContact] = useCreateContactMutation();
 
   const inputNumberId = nanoid(4);
   const inputNameId = nanoid(4);
@@ -24,15 +29,26 @@ const ContactForm = ({ onSubmitForm }) => {
     }
   };
 
+  const addContact = data => {
+    const contactNames = contacts.map(contact => contact.name.toLowerCase());
+
+    if (!contactNames.includes(data.name.toLowerCase())) {
+      createContact(data);
+      reset();
+      toast.success(`Contact, ${data.name} successfully added`);
+    } else {
+      toast.error(`${data.name} is already in contacts.`);
+    }
+  };
+
   const hendelSubmit = event => {
     event.preventDefault();
-    const addContact = {
+    const contact = {
       id: nanoid(4),
       name,
       number,
     };
-    onSubmitForm(addContact);
-    reset();
+    addContact(contact);
   };
 
   const reset = () => {
